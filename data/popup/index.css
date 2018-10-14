@@ -1,10 +1,16 @@
 body {
   font-family: "Helvetica Neue",Helvetica,sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-size: 13px;
   margin: 0;
-  width: 700px;
   min-height: 100px;
   user-select: none;
+  height: 100vh;
+}
+body[data-popup=true] {
+  width: 700px;
+  height: 500px;
 }
 #loading {
   background: rgba(0, 0, 0, 0.3) url(hourglass.svg) center center no-repeat;
@@ -13,6 +19,20 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
+}
+#msg {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #a1a1a1;
+  position: absolute;
+  font-size: 150%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-shadow: 0 0 10px #fff;
+}
+#msg:empty {
+  display: none;
 }
 
 #header,
@@ -27,7 +47,7 @@ body {
 }
 #header th:not(:first-child):not(:last-child),
 #cookies td:not(:first-child):not(:last-child) {
-  border: solid 1px #a0a0a0;
+  border: dotted 1px #d2d2d2;
   border-top: none;
   border-bottom: none;
 }
@@ -45,7 +65,7 @@ body {
   background-color: #f0f6fd;
 }
 #cookies tr[data-selected=true] {
-  background-color: #306ed4;
+  background-color: #2196f3;
   color: #fff;
 }
 
@@ -53,6 +73,9 @@ summary {
   outline: none;
   cursor: pointer;
   margin-left: 10px;
+}
+summary b {
+  font-weight: 500;
 }
 
 table.cookies tr {
@@ -64,30 +87,61 @@ input[type=text] {
   box-sizing: border-box;
   text-indent: 3px;
 }
-input[type=datetime-local] {
+input[type=date],
+input[type=time] {
   width: 100%;
   box-sizing: border-box;
 }
-input[type=datetime-local],
+input[type=date],
+input[type=time],
 input[type=text],
 textarea {
   outline: none;
   border: solid 1px #ccc;
 }
+input[type=date]:focus,
+input[type=time]:focus,
+input[type=text]:focus {
+  border: solid 1px #71adf9;
+}
 textarea {
   resize: none;
+  border: none;
+  background-color: #e6e6e6;
+  padding: 5px;
 }
 
+input {
+  border: solid 1px #ccc;
+}
+input[type=date],
+input[type=time],
+input[type=text] {
+  padding: 3px;
+}
+input[type=submit],
+input[type=button] {
+  padding: 5px 10px;
+  background-color: #fff;
+  outline: none;
+  cursor: pointer;
+  margin: 2px;
+}
 input:disabled {
-  opacity: 0.5;
+  opacity: 0.8;
 }
 input:read-only {
   background-color: transparent;
+}
+input[type=submit]:active,
+input[type=button]:active {
+  opacity: 0.5;
 }
 
 #editor {
   margin-top: 10px;
   background-color: #f1f1f1;
+  border-top: solid 1px #dcdcdc;
   position: relative;
 }
 #toolbox {
@@ -99,7 +153,20 @@ input:read-only {
 #editor[data-edited=false] #reset {
   display: none;
 }
+body[data-popup=false] [data-cmd=expand] {
+  display: none;
+}
 
+
+#cookies {
+  overflow: auto;
+}
+
+.toolbar {
+  padding: 5px 10px;
+  margin-top: -15px;
+  background-color: #fff;
+}
 
 [hbox] {
   display: flex;
@@ -110,4 +177,16 @@ input:read-only {
 }
 [flex="1"] {
   flex: 1;
+}
+[align=center] {
+  align-items: center;
+}
+[pack=center] {
+  justify-content: center;
+}
+[align=end] {
+  align-items: flex-end;
+}
+[pack=end] {
+  justify-content: flex-end;
 }

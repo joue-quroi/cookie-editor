@@ -11,6 +11,12 @@ cookies.replace = (url, oldC, newC) => {
   return new Promise((resolve, reject) => {
     const next = () => {
       try {
+        const allowed = [
+          'url', 'name', 'value', 'domain', 'path', 'secure',
+          'httpOnly', 'sameSite', 'expirationDate', 'storeId'
+        ];
+        Object.keys(newC).filter(key => allowed.indexOf(key) === -1).forEach(key => delete newC[key]);
+
         chrome.cookies.set(newC, cookie => {
           if (chrome.runtime.lastError) {
             reject(chrome.runtime.lastError);

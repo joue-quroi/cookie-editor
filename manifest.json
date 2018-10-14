@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Cookie Editor",
   "description": "Edit cookies related to the current page and all its sub-frames right from a popup",
 
@@ -15,7 +15,7 @@
 
   "permissions": [
     "cookies",
-    "tabs",
+    "storage",
     "notifications",
     "*://*/*"
   ],
@@ -30,10 +30,24 @@
     "default_popup": "data/popup/index.html"
   },
 
+  "homepage_url": "http://add0n.com/cookie-editor.html",
+
   "background": {
     "persistent": false,
     "scripts": [
       "background.js"
     ]
+  },
+
+  "options_ui": {
+    "page": "data/options/index.html",
+    "chrome_style": true
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "{48df221a-8316-4d17-9191-7fc5ea5f14c0}",
+      "strict_min_version": "52.0"
+    }
   }
 }

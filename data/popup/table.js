@@ -20,7 +20,7 @@ table.emit = (id, data) => (table.callbacks[id] || []).forEach(c => c(data));
 table.write = (root, cookie, origin) => {
   if (!root) {
     [root] = document.querySelector('details[open] tbody').add([cookie], origin);
-    root.querySelector('input').active();
+    root.querySelector('input[type=radio]').active();
   }
   root.cookie = cookie;
   root.origin = origin;
@@ -37,14 +37,15 @@ table.write = (root, cookie, origin) => {
 
   return root;
 };
-table.section = (title, open = false) => {
+table.section = (origin, open = false) => {
   const root = document.importNode(document.getElementById('hostname').content, true);
-  root.querySelector('b').textContent = title;
+  root.querySelector('b').textContent = origin;
   root.querySelector('details').open = open;
+  root.querySelector('[data-cmd="create"]').dataset.origin = origin;
   const tbody = root.querySelector('tbody');
   const num = root.querySelector('[data-id=number]');
   tbody.count = n => num.textContent = n;
-  tbody.first = () => tbody.querySelector('input');
+  tbody.first = () => tbody.querySelector('input[type=radio]');
   tbody.add = (list, domain) => {
     const f = document.createDocumentFragment();
     const ce = document.getElementById('cookie');
@@ -59,19 +60,20 @@ table.section = (title, open = false) => {
     return trs;
   };
   document.getElementById('cookies').appendChild(root);
+
   return tbody;
 };
 table.append = tr => tr.parentNode.appendChild(tr);
 table.query = (q = '') => document.querySelector('#cookies [data-selected=true]' + (q ? ' ' + q : ''));
 table.remove = tr => {
-  const ntr = tr.previousElementSibling;
+  const ntr = tr.previousElementSibling || tr.nextElementSibling;
   const tbody = tr.closest('tbody');
   const num = tbody.querySelectorAll('tr').length - 1;
   tbody.count(num);
   tr.remove();
 
   if (ntr) {
-    ntr.querySelector('input').active();
+    ntr.querySelector('input[type=radio]').active();
   }
   else {
     table.emit('no-select');
@@ -85,7 +87,7 @@ document.getElementById('cookies').addEventListener('change', ({target}) => {
 document.getElementById('cookies').addEventListener('click', ({target}) => {
   const tr = target.closest('tr.cookie');
   if (tr) {
-    const input = tr.querySelector('input');
+    const input = tr.querySelector('input[type=radio]');
     if (input !== target) {
       input.active();
     }
@@ -93,6 +95,17 @@ document.getElementById('cookies').addEventListener('click', ({target}) => {
 });
 // change section
 document.getElementById('cookies').addEventListener('change', ({target}) => {
-  document.querySelectorAll('#cookies [data-selected]').forEach(e => e.dataset.selected = false);
-  target.closest('tr').dataset.selected = true;
+  if (target.type === 'radio') {
+    document.querySelectorAll('#cookies [data-selected]').forEach(e => e.dataset.selected = false);
+    target.closest('tr').dataset.selected = true;
+  }
+  else if (target.type === 'checkbox') {
+    table.emit('multi-select', [
+      ...document.querySelectorAll('#cookies input[type=checkbox]:checked')
+    ].map(i => {
+      const tr = i.closest('tr');
+      const {cookie, origin} = tr;
+      return Object.assign(cookie, {origin});
+    }));
+  }
 });

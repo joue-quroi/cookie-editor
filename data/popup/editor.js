@@ -4,6 +4,13 @@ var editor = {
   element: document.getElementById('editor'),
   cookie: {},
   origin: null,
+  callbacks: {
+    reset: [],
+    remove: [],
+    create: [],
+    expand: [],
+    export: []
+  }
 };
 
 editor.update = (cookie, origin = editor.origin) => {
@@ -19,7 +26,8 @@ editor.update = (cookie, origin = editor.origin) => {
   document.getElementById('secure').checked = cookie.secure;
   document.getElementById('session').checked = cookie.session;
   if (cookie.session === false) {
-    document.getElementById('datetime').valueAsNumber = cookie.expirationDate;
+    document.getElementById('date').valueAsNumber = cookie.expirationDate * 1000;
+    document.getElementById('time').valueAsNumber = cookie.expirationDate * 1000;
   }
   document.getElementById('session').checked = cookie.session;
   document.getElementById('value').value = cookie.value || '';
@@ -42,16 +50,28 @@ editor.isChanged = () => {
   changed = changed || cookie.session !== document.getElementById('session').checked;
   changed = changed || cookie.value !== document.getElementById('value').value;
   if (document.getElementById('session').checked === false) {
-    changed = changed || Math.round(cookie.expirationDate) !== document.getElementById('datetime').valueAsNumber;
+    const v = document.getElementById('date').valueAsNumber +
+      document.getElementById('time').valueAsNumber;
+    changed = changed || Math.round(cookie.expirationDate * 1000) !== v;
   }
   return changed;
 };
-editor.reset = c => document.getElementById('reset').addEventListener('click', c);
+editor.reset = c => editor.callbacks.reset.push(c);
 editor.save = c => document.getElementById('editor').addEventListener('submit', e => {
   e.preventDefault();
   c();
 });
-editor.remove = c => document.getElementById('remove').addEventListener('click', c);
+editor.remove = c => editor.callbacks.remove.push(c);
+editor.expand = c => editor.callbacks.expand.push(c);
+editor.export = c => editor.callbacks.export.push(c);
+editor.create = c => editor.callbacks.create.push(c);
+
+document.addEventListener('click', e => {
+  const cmd = e.target.dataset.cmd;
+  if (cmd === 'remove' || cmd === 'reset' || cmd === 'create' || cmd === 'expand' || cmd === 'export') {
+    editor.callbacks[cmd].forEach(c => c(e));
+  }
+});
 
 editor.toObject = () => {
   const obj = {
@@ -67,16 +87,18 @@ editor.toObject = () => {
   }
   const session = document.getElementById('session').checked;
   if (session === false) {
-    obj.expirationDate = document.getElementById('datetime').valueAsNumber;
+    obj.expirationDate = (document.getElementById('date').valueAsNumber +
+      document.getElementById('time').valueAsNumber) / 1000;
   }
   return obj;
 };
 
-editor.attr = (obj, ...ids) => ids.forEach(id => Object.assign(document.getElementById(id), obj));
+editor.attr = (obj, ...queries) => queries.forEach(query => Object.assign(document.querySelector(query), obj));
 
 // disable datetime element when not applicable
 document.getElementById('session').addEventListener('change', ({target}) => {
-  document.getElementById('datetime').disabled = target.checked;
+  document.getElementById('date').disabled = target.checked;
+  document.getElementById('time').disabled = target.checked;
 });
 {
   const a = () => {
@@ -84,7 +106,7 @@ document.getElementById('session').addEventListener('change', ({target}) => {
     editor.element.dataset.edited = edited;
     editor.attr({
       disabled: edited === false
-    }, 'save', 'reset');
+    }, '#save', '[data-cmd=reset]');
   };
   document.getElementById('editor').addEventListener('change', a);
   document.getElementById('editor').addEventListener('input', a);
