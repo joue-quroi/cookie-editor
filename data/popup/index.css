@@ -45,7 +45,6 @@ body[data-popup=true] {
   text-align: left;
   background-color: #f1f1f1;
 }
-#header th:not(:first-child):not(:last-child),
 #cookies td:not(:first-child):not(:last-child) {
   border: dotted 1px #d2d2d2;
   border-top: none;

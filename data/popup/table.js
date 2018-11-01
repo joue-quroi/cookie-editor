@@ -9,7 +9,16 @@ HTMLElement.prototype.active = function() {
 };
 
 var table = {
-  callbacks: {}
+  colgroups: [],
+  callbacks: {
+    'resizing': [array => {
+      table.colgroups.forEach(colgroup => {
+        [...colgroup.querySelectorAll('col')].forEach((col, i) => {
+          col.width = array[i];
+        });
+      });
+    }]
+  }
 };
 table.on = (id, callback) => {
   table.callbacks[id] = table.callbacks[id] || [];
@@ -42,6 +51,9 @@ table.section = (origin, open = false) => {
   root.querySelector('b').textContent = origin;
   root.querySelector('details').open = open;
   root.querySelector('[data-cmd="create"]').dataset.origin = origin;
+  // store colgroup element for resizing
+  table.colgroups.push(root.querySelector('colgroup'));
+  //
   const tbody = root.querySelector('tbody');
   const num = root.querySelector('[data-id=number]');
   tbody.count = n => num.textContent = n;

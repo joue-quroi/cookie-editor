@@ -1,4 +1,4 @@
-/* globals cookies, table, editor */
+/* globals cookies, table, editor, Resizable */
 'use strict';
 
 var args = new URLSearchParams(location.search);
@@ -37,6 +37,17 @@ const init = () => chrome.tabs.executeScript(tabId, {
         }
       });
     });
+    // resizing
+    const resizable = new Resizable(document.getElementById('header'), {
+      offset: -3,
+      width: 5,
+      min: 5,
+      persist: true
+    });
+    resizable.on('draw', () => {
+      table.emit('resizing', resizable.array());
+    });
+    resizable.init();
   }
 });
 
