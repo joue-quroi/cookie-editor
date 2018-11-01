@@ -2,15 +2,22 @@
 
 // context me
 {
-  const once = () => chrome.contextMenus.create({
-    id: 'search',
-    title: 'Search Cookies by Domain',
-    contexts: ['browser_action']
-  });
+  const once = () => {
+    chrome.contextMenus.create({
+      id: 'search',
+      title: 'Search Cookies by Domain',
+      contexts: ['browser_action']
+    });
+    chrome.contextMenus.create({
+      id: 'open',
+      title: 'Open Cookie Editor in new Tab',
+      contexts: ['browser_action']
+    });
+  }
   chrome.runtime.onStartup.addListener(once);
   chrome.runtime.onInstalled.addListener(once);
 }
-chrome.contextMenus.onClicked.addListener(info => {
+chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'search') {
     const search = window.prompt('Please enter the domain (e.g.: www.google.com)');
     if (search) {
@@ -18,6 +25,11 @@ chrome.contextMenus.onClicked.addListener(info => {
         url: '/data/popup/index.html?search=' + encodeURIComponent(search)
       });
     }
+  }
+  else if (info.menuItemId === 'open') {
+    chrome.tabs.create({
+      url: '/data/popup/index.html?tabId=' + encodeURIComponent(tab.id)
+    });
   }
 });
 // FAQs & Feedback
