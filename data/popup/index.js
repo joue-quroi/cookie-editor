@@ -113,7 +113,16 @@ editor.save(() => {
 });
 
 editor.remove(() => {
-  table.selected().map(({cookie, origin, tr}) => {
+  const items = table.selected();
+  if (items.length === 0) {
+    const tr = document.querySelector('#cookies input[type=radio]:checked').closest('tr');
+    items.push({
+      tr,
+      cookie: tr.cookie,
+      origin: tr.origin
+    });
+  }
+  items.map(({cookie, origin, tr}) => {
     cookies.remove(origin, cookie).then(table.remove(tr));
   });
 });
