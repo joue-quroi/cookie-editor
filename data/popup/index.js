@@ -37,17 +37,19 @@ const init = () => chrome.tabs.executeScript(tabId, {
         }
       });
     });
-    // resizing
-    const resizable = new Resizable(document.getElementById('header'), {
-      offset: -3,
-      width: 5,
-      min: 5,
-      persist: true
-    });
-    resizable.on('draw', () => {
-      table.emit('resizing', resizable.array());
-    });
-    resizable.init();
+    // resizing for expanded mode
+    if (tabId) {
+      const resizable = new Resizable(document.getElementById('header'), {
+        offset: -3,
+        width: 5,
+        min: 5,
+        persist: true
+      });
+      resizable.on('draw', () => {
+        table.emit('resizing', resizable.array());
+      });
+      resizable.init();
+    }
   }
 });
 
@@ -77,13 +79,14 @@ editor.create(e => {
   const tr = tbody.add([{
     name: '',
     value: '',
-    expirationDate: Date.now() / 1000,
+    expirationDate: Date.now() / 1000 + 24 * 60 * 60,
     session: false
   }], origin).shift();
   const input = tr.querySelector('input[type=radio]');
   input.checked = true;
   input.dispatchEvent(new Event('change', {bubbles: true}));
   input.scrollIntoView();
+  editor.focus();
 });
 
 editor.reset(() => table.query('input').active());

@@ -87,8 +87,8 @@ editor.toObject = () => {
   }
   const session = document.getElementById('session').checked;
   if (session === false) {
-    obj.expirationDate = (document.getElementById('date').valueAsNumber +
-      document.getElementById('time').valueAsNumber) / 1000;
+    obj.expirationDate = parseInt((document.getElementById('date').valueAsNumber +
+      document.getElementById('time').valueAsNumber) / 1000);
   }
   return obj;
 };
@@ -111,3 +111,5 @@ document.getElementById('session').addEventListener('change', ({target}) => {
   document.getElementById('editor').addEventListener('change', a);
   document.getElementById('editor').addEventListener('input', a);
 }
+
+editor.focus = () => document.getElementById('name').focus();

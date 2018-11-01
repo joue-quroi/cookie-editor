@@ -16,10 +16,12 @@ cookies.replace = (url, oldC, newC) => {
           'httpOnly', 'sameSite', 'expirationDate', 'storeId'
         ];
         Object.keys(newC).filter(key => allowed.indexOf(key) === -1).forEach(key => delete newC[key]);
-
         chrome.cookies.set(newC, cookie => {
           if (chrome.runtime.lastError) {
             reject(chrome.runtime.lastError);
+          }
+          else if (!cookie) {
+            reject(new Error('the created cookie is now deleted'));
           }
           else {
             resolve(cookie);
