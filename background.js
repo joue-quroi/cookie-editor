@@ -1,5 +1,12 @@
 'use strict';
 
+var notify = message => chrome.notifications.create({
+  type: 'basic',
+  iconUrl: '/data/icons/48.png',
+  title: 'Bulk Media Downloader',
+  message
+});
+
 // context me
 {
   const once = () => {
@@ -13,17 +20,37 @@
       title: 'Open Cookie Editor in new Tab',
       contexts: ['browser_action']
     });
-  }
+  };
   chrome.runtime.onStartup.addListener(once);
   chrome.runtime.onInstalled.addListener(once);
 }
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'search') {
-    const search = window.prompt('Please enter the domain (e.g.: www.google.com)');
-    if (search) {
-      chrome.tabs.create({
-        url: '/data/popup/index.html?search=' + encodeURIComponent(search)
+    let search;
+    const next = () => {
+      if (search) {
+        chrome.tabs.create({
+          url: '/data/popup/index.html?search=' + encodeURIComponent(search)
+        });
+      }
+    };
+    if (/Firefox/.test(navigator.userAgent)) {
+      chrome.tabs.executeScript({
+        code: `window.prompt('Please enter the domain (e.g.: www.google.com)')`,
+        runAt: 'document_start'
+      }, a => {
+        if (chrome.runtime.lastError) {
+          notify(chrome.runtime.lastError.message);
+        }
+        else if (a) {
+          search = a[0];
+          next();
+        }
       });
+    }
+    else {
+      search = window.prompt('Please enter the domain (e.g.: www.google.com)');
+      next();
     }
   }
   else if (info.menuItemId === 'open') {
