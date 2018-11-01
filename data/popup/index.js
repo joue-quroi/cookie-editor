@@ -110,9 +110,8 @@ editor.save(() => {
 });
 
 editor.remove(() => {
-  const {origin, cookie} = editor;
-  cookies.remove(origin, cookie).then(() => {
-    table.remove(table.query());
+  table.selected().map(({cookie, origin, tr}) => {
+    cookies.remove(origin, cookie).then(table.remove(tr));
   });
 });
 editor.expand(() => chrome.tabs.query({

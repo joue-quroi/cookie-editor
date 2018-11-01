@@ -91,6 +91,19 @@ table.remove = tr => {
     table.emit('no-select');
   }
 };
+table.selected = () => {
+  return [
+    ...document.querySelectorAll('#cookies input[type=checkbox]:checked')
+  ].map(i => {
+    const tr = i.closest('tr');
+    const {cookie, origin} = tr;
+    return {
+      cookie,
+      origin,
+      tr
+    };
+  });
+};
 document.getElementById('cookies').addEventListener('change', ({target}) => {
   const tr = target.closest('tr');
   table.emit('select', tr);
@@ -112,12 +125,9 @@ document.getElementById('cookies').addEventListener('change', ({target}) => {
     target.closest('tr').dataset.selected = true;
   }
   else if (target.type === 'checkbox') {
-    table.emit('multi-select', [
-      ...document.querySelectorAll('#cookies input[type=checkbox]:checked')
-    ].map(i => {
-      const tr = i.closest('tr');
-      const {cookie, origin} = tr;
-      return Object.assign(cookie, {origin});
-    }));
+    table.emit(
+      'multi-select',
+      table.selected().map(({cookie, origin}) => Object.assign(cookie, {origin}))
+    );
   }
 });
