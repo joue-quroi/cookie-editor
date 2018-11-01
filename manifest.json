@@ -17,6 +17,7 @@
     "cookies",
     "storage",
     "notifications",
+    "contextMenus",
     "*://*/*"
   ],
 

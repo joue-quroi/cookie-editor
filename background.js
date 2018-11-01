@@ -1,7 +1,27 @@
 'use strict';
 
-var once = () => {
-  // FAQs & Feedback
+// context me
+{
+  const once = () => chrome.contextMenus.create({
+    id: 'search',
+    title: 'Search Cookies by Domain',
+    contexts: ['browser_action']
+  });
+  chrome.runtime.onStartup.addListener(once);
+  chrome.runtime.onInstalled.addListener(once);
+}
+chrome.contextMenus.onClicked.addListener(info => {
+  if (info.menuItemId === 'search') {
+    const search = window.prompt('Please enter the domain (e.g.: www.google.com)');
+    if (search) {
+      chrome.tabs.create({
+        url: '/data/popup/index.html?search=' + encodeURIComponent(search)
+      });
+    }
+  }
+});
+// FAQs & Feedback
+chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get({
     'version': null,
     'faqs': navigator.userAgent.indexOf('Firefox') === -1,
@@ -35,7 +55,5 @@ var once = () => {
       chrome.runtime.getManifest().homepage_url + '?rd=feedback&name=' + name + '&version=' + version
     );
   }
-};
-chrome.runtime.onStartup.addListener(once);
-chrome.runtime.onInstalled.addListener(once);
+});
 

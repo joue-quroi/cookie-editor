@@ -2,58 +2,73 @@
 'use strict';
 
 var args = new URLSearchParams(location.search);
+var search = args.get('search') || null;
 var tabId = args.get('tabId') || null;
 if (tabId) {
   tabId = Number(tabId);
-  document.body.dataset.popup = false;
 }
+document.body.dataset.popup = !tabId && !search;
 
-const init = () => chrome.tabs.executeScript(tabId, {
-  allFrames: true,
-  code: 'Object.assign({top: window.top === window}, document.location);',
-  runAt: 'document_start'
-}, a => {
-  //
+const init = a => {
+  const hostnames = a.map(o => o.origin).filter((h, i, l) => l.indexOf(h) === i);
+  const top = a.filter(o => o.top).shift();
+  hostnames.forEach(h => {
+    const tbody = table.section(h, h === top.origin);
+    cookies.all(h).then(cs => {
+      tbody.add(cs, h);
+      tbody.count(cs.length);
+      if (h === top.origin && cs.length) {
+        tbody.first().active();
+      }
+      // when there is no cookie
+      if (cs.length === 0 && h === top.origin) {
+        editor.origin = top.origin;
+        document.getElementById('domain').value = top.hostname;
+      }
+    });
+  });
+  // resizing for expanded mode
+  if (document.body.dataset.popup === 'false') {
+    const resizable = new Resizable(document.getElementById('header'), {
+      offset: -3,
+      width: 5,
+      min: 5,
+      persist: true
+    });
+    resizable.on('draw', () => {
+      table.emit('resizing', resizable.array());
+    });
+    resizable.init();
+  }
+  // remove loader
   document.getElementById('loading').remove();
-  //
-  if (chrome.runtime.lastError) {
-    document.getElementById('msg').textContent = chrome.runtime.lastError.message;
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (search) {
+    if (search.indexOf('://') === -1) {
+      search = 'http://' + search;
+    }
+    init([Object.assign(new URL(search), {
+      top: true
+    })]);
   }
   else {
-    const hostnames = a.map(o => o.origin).filter((h, i, l) => l.indexOf(h) === i);
-    const top = a.filter(o => o.top).shift();
-    hostnames.forEach(h => {
-      const tbody = table.section(h, h === top.origin);
-      cookies.all(h).then(cs => {
-        tbody.add(cs, h);
-        tbody.count(cs.length);
-        if (h === top.origin && cs.length) {
-          tbody.first().active();
-        }
-        // when there is no cookie
-        if (cs.length === 0 && h === top.origin) {
-          editor.origin = top.origin;
-          document.getElementById('domain').value = top.hostname;
-        }
-      });
+    chrome.tabs.executeScript(tabId, {
+      allFrames: true,
+      code: 'Object.assign({top: window.top === window}, document.location);',
+      runAt: 'document_start'
+    }, a => {
+      if (chrome.runtime.lastError) {
+        document.getElementById('loading').remove();
+        document.getElementById('msg').textContent = chrome.runtime.lastError.message;
+      }
+      else {
+        init(a);
+      }
     });
-    // resizing for expanded mode
-    if (tabId) {
-      const resizable = new Resizable(document.getElementById('header'), {
-        offset: -3,
-        width: 5,
-        min: 5,
-        persist: true
-      });
-      resizable.on('draw', () => {
-        table.emit('resizing', resizable.array());
-      });
-      resizable.init();
-    }
   }
 });
-
-document.addEventListener('DOMContentLoaded', () => window.setTimeout(init, 500));
 
 table.on('select', tr => {
   editor.attr({
