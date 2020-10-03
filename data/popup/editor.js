@@ -13,9 +13,11 @@ var editor = {
   }
 };
 
-editor.update = (cookie, origin = editor.origin) => {
+editor.update = (cookie, origin = editor.origin, tr) => {
+  console.log(cookie, tr);
   editor.origin = origin;
   editor.cookie = cookie;
+  editor.tr = tr;
   if (cookie.domain) {
     document.getElementById('domain').value = cookie.domain;
   }
@@ -28,6 +30,7 @@ editor.update = (cookie, origin = editor.origin) => {
   if (cookie.session === false) {
     document.getElementById('date').valueAsNumber = cookie.expirationDate * 1000;
     document.getElementById('time').valueAsNumber = cookie.expirationDate * 1000;
+    console.log(document.getElementById('time'), cookie.expirationDate * 1000);
   }
   document.getElementById('session').checked = cookie.session;
   document.getElementById('value').value = cookie.value || '';
@@ -103,7 +106,7 @@ document.getElementById('session').addEventListener('change', ({target}) => {
 {
   const a = () => {
     const edited = editor.isChanged();
-    editor.element.dataset.edited = edited;
+    editor.tr.dataset.edited = editor.element.dataset.edited = edited;
     editor.attr({
       disabled: edited === false
     }, '#save', '[data-cmd=reset]');

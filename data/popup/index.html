@@ -59,7 +59,7 @@
       <details>
         <summary><b></b> (<span data-id=number></span>)</summary>
         <div hbox pack=end class="toolbar">
-          <input type="button" value="add a new cookie" data-cmd="create"/>
+          <input type="button" value="New / Import" data-cmd="create" title="use Shift key to import JSON or TEXT format cookies"/>
         </div>
         <table width=100% class="cookies">
           <colgroup>
@@ -126,7 +126,7 @@
         <textarea flex="1" id="value" placeholder="cookie value" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
       </div>
       <div id="toolbox">
-        <input type="button" value="Export" data-cmd="export" disabled="true"> - <input type="button" value="Reset" data-cmd="reset" disabled="true">
+        <input type="button" value="Export" data-cmd="export" disabled="true" title="Use Shift key while clicking to export as Wget/Curl compatible format"> <input type="button" value="Reset" data-cmd="reset" disabled="true">
         <input type="submit" value="Save" id="save" disabled="true">
         <input type="button" value="Remove" data-cmd="remove" disabled="true">
         <input type="button" value="Expand" data-cmd="expand">

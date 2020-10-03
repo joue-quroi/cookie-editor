@@ -44,21 +44,21 @@ body[data-popup=true] {
   font-weight: normal;
   background-color: #f1f1f1;
 }
-body[data-popup=true]  #header th:not(:first-child):not(:last-child),
+body[data-popup=true] #header th:not(:first-child):not(:last-child),
 #cookies td:not(:first-child):not(:last-child) {
   border: dotted 1px #d2d2d2;
   border-top: none;
   border-bottom: none;
 }
-#cookies td,
-#header th {
-  padding: 2px 5px;
+#cookies td:not(:first-child),
+#header th:not(:first-child) {
+  padding: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 #header th {
-  border-bottom: solid 1px #a0a0a0 !important;
+  padding: 5px 0;
 }
 #cookies tr:nth-child(even) {
   background-color: #f0f6fd;
@@ -80,6 +80,9 @@ summary b {
 table.cookies tr {
   cursor: pointer;
 }
+table.cookies tr[data-edited=true] {
+  font-style: italic;
+}
 
 input[type=text] {
   width: 100%;
@@ -96,12 +99,12 @@ input[type=time],
 input[type=text],
 textarea {
   outline: none;
-  border: solid 1px #ccc;
+  border: none;
 }
 input[type=date]:focus,
 input[type=time]:focus,
 input[type=text]:focus {
-  border: solid 1px #71adf9;
+  background-color: #d9edf9;
 }
 textarea {
   resize: none;
@@ -110,24 +113,22 @@ textarea {
   padding: 5px;
 }
 
-input {
-  border: solid 1px #ccc;
-}
 input[type=date],
 input[type=time],
 input[type=text] {
-  padding: 3px;
+  padding: 5px;
 }
 input[type=submit],
 input[type=button] {
   padding: 5px 10px;
-  background-color: #fff;
+  border: none;
+  background-color: #f1f1f1;
   outline: none;
   cursor: pointer;
   margin: 2px;
 }
 input:disabled {
-  opacity: 0.8;
+  display: none;
 }
 input:read-only {
   background-color: transparent;
@@ -140,16 +141,19 @@ input[type=button]:active {
 #editor {
   margin-top: 10px;
   background-color: #f1f1f1;
-  border-top: solid 1px #dcdcdc;
   position: relative;
 }
-#editor>div:first-child {
+#editor > div:first-child {
   padding: 5px;
 }
 #toolbox {
   position: absolute;
-  right: 5px;
-  bottom: 5px;
+  right: 0;
+  bottom: 0;
+  padding: 5px;
+}
+#toolbox input {
+  background-color: #fff;
 }
 #editor[data-edited=false] #save,
 #editor[data-edited=false] #reset {

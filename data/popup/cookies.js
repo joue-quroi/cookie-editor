@@ -13,7 +13,7 @@ cookies.replace = (url, oldC, newC) => {
       try {
         const allowed = [
           'url', 'name', 'value', 'domain', 'path', 'secure',
-          'httpOnly', 'sameSite', 'expirationDate', 'storeId'
+          'httpOnly', 'sameSite', 'expirationDate', 'storeId', 'hostOnly'
         ];
         Object.keys(newC).filter(key => allowed.indexOf(key) === -1).forEach(key => delete newC[key]);
         chrome.cookies.set(newC, cookie => {
