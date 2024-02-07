@@ -8,7 +8,7 @@ HTMLElement.prototype.active = function() {
   }));
 };
 
-var table = {
+const table = {
   colgroups: [],
   callbacks: {
     'resizing': [array => {
@@ -103,6 +103,24 @@ table.selected = () => {
       tr
     };
   });
+};
+table.select = {
+  all() {
+    for (const e of document.querySelectorAll('#cookies input[type=checkbox]')) {
+      e.checked = true;
+    }
+    document.querySelector('#cookies input[type=checkbox]').dispatchEvent(new Event('change', {
+      bubbles: true
+    }));
+  },
+  none() {
+    for (const e of document.querySelectorAll('#cookies input[type=checkbox]')) {
+      e.checked = false;
+    }
+    document.querySelector('#cookies input[type=checkbox]').dispatchEvent(new Event('change', {
+      bubbles: true
+    }));
+  }
 };
 document.getElementById('cookies').addEventListener('change', ({target}) => {
   const tr = target.closest('tr');

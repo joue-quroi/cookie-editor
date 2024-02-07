@@ -12,7 +12,7 @@ if (tabId) {
 document.body.dataset.popup = !tabId && !search;
 
 const init = a => {
-  const hostnames = a.filter(o => o.host).map(o => o.origin).filter((h, i, l) => l.indexOf(h) === i);
+  const hostnames = a.filter(o => o && o.host).map(o => o.origin).filter((h, i, l) => l.indexOf(h) === i);
 
   const top = a.filter(o => o.top).shift();
   hostnames.forEach(h => {
@@ -31,7 +31,7 @@ const init = a => {
     });
   });
   // resizing for expanded mode
-  if (document.body.dataset.popup === 'false') {
+  if (false && document.body.dataset.popup === 'false') {
     const resizable = new Resizable(document.getElementById('header'), {
       offset: -3,
       width: 5,
@@ -66,30 +66,48 @@ window.addEventListener('load', async () => {
     }
   }
   else {
+    const [tab] = await chrome.tabs.query({
+      currentWindow: true,
+      active: true
+    });
     if (!tabId) {
-      const [tab] = await chrome.tabs.query({
-        currentWindow: true,
-        active: true
-      });
       tabId = tab.id;
     }
-
-    chrome.scripting.executeScript({
-      target: {
-        tabId,
-        allFrames: true
-      },
-      func: () => Object.assign({
-        top: window.top === window
-      }, document.location)
-    }, a => {
-      if (chrome.runtime.lastError) {
-        document.getElementById('loading').remove();
-        document.getElementById('msg').textContent = chrome.runtime.lastError.message;
+    Promise.race([
+      chrome.scripting.executeScript({
+        target: {
+          tabId,
+          allFrames: true
+        },
+        func: () => Object.assign({
+          top: window.top === window
+        }, document.location),
+        injectImmediately: true
+      }),
+      new Promise((resolve, reject) => setTimeout(() => {
+        try {
+          resolve([{
+            result: Object.assign(new URL(tab.url), {
+              top: true
+            })
+          }]);
+        }
+        catch (e) {
+          reject(e);
+        }
+      }, 5000))
+    ]).then(a => {
+      const results = a.map(r => r.result).filter(o => o);
+      if (results.length) {
+        init(results);
+        return;
       }
-      else {
-        init(a.map(r => r.result));
-      }
+      throw Error('This page has no document');
+    }).catch(e => {
+      console.log(e);
+      document.getElementById('loading').remove();
+      console.log(tab);
+      document.getElementById('msg').textContent = 'Cannot find cookies for this page: ' + e.message;
     });
   }
 });

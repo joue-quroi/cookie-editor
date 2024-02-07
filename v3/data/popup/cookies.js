@@ -1,6 +1,6 @@
 'use strict';
 
-var cookies = {};
+const cookies = {};
 
 cookies.all = url => new Promise(resolve => chrome.cookies.getAll({
   url
@@ -21,7 +21,7 @@ cookies.replace = (url, oldC, newC) => {
             reject(chrome.runtime.lastError);
           }
           else if (!cookie) {
-            reject(new Error('the created cookie is now deleted'));
+            reject(new Error('This cookie is deleted (expired)'));
           }
           else {
             resolve(cookie);

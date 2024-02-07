@@ -1,6 +1,7 @@
+/* global table */
 'use strict';
 
-var editor = {
+const editor = {
   element: document.getElementById('editor'),
   cookie: {},
   origin: null,
@@ -14,7 +15,6 @@ var editor = {
 };
 
 editor.update = (cookie, origin = editor.origin, tr) => {
-  console.log(cookie, tr);
   editor.origin = origin;
   editor.cookie = cookie;
   editor.tr = tr;
@@ -30,7 +30,6 @@ editor.update = (cookie, origin = editor.origin, tr) => {
   if (cookie.session === false) {
     document.getElementById('date').valueAsNumber = cookie.expirationDate * 1000;
     document.getElementById('time').valueAsNumber = cookie.expirationDate * 1000;
-    console.log(document.getElementById('time'), cookie.expirationDate * 1000);
   }
   document.getElementById('session').checked = cookie.session;
   document.getElementById('value').value = cookie.value || '';
@@ -73,6 +72,12 @@ document.addEventListener('click', e => {
   const cmd = e.target.dataset.cmd;
   if (cmd === 'remove' || cmd === 'reset' || cmd === 'create' || cmd === 'expand' || cmd === 'export') {
     editor.callbacks[cmd].forEach(c => c(e));
+  }
+  else if (cmd === 'select-all') {
+    table.select.all();
+  }
+  else if (cmd === 'select-none') {
+    table.select.none();
   }
 });
 

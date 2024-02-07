@@ -1,5 +1,5 @@
 body {
-  font-family: "Helvetica Neue",Helvetica,sans-serif;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 13px;
@@ -9,7 +9,7 @@ body {
   height: 100vh;
 }
 body[data-popup=true] {
-  width: 700px;
+  width: 800px;
   height: 500px;
 }
 #loading {
@@ -27,8 +27,9 @@ body[data-popup=true] {
   font-size: 150%;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  padding: 20px;
   text-shadow: 0 0 10px #fff;
 }
 #msg:empty {
@@ -71,10 +72,17 @@ body[data-popup=true] #header th:not(:first-child):not(:last-child),
 summary {
   outline: none;
   cursor: pointer;
-  margin-left: 10px;
+  margin-left: 7px;
+  height: 4ch;
+  line-height: 4ch;
+}
+summary > input[type=button] {
+  display: inline;
+  float: right;
 }
 summary b {
   font-weight: 500;
+  margin-left: 5px;
 }
 
 table.cookies tr {
@@ -125,10 +133,9 @@ input[type=button] {
   background-color: #f1f1f1;
   outline: none;
   cursor: pointer;
-  margin: 2px;
 }
 input:disabled {
-  display: none;
+  opacity: 0.5;
 }
 input:read-only {
   background-color: transparent;
@@ -136,6 +143,16 @@ input:read-only {
 input[type=submit]:active,
 input[type=button]:active {
   opacity: 0.5;
+}
+input[type=button][data-cmd=select-all] {
+  border-right: solid 2px #f1f1f1;
+}
+
+@media only screen and (max-width: 600px) {
+  input[type=button][data-cmd=select-all],
+  input[type=button][data-cmd=select-none] {
+    display: none;
+  }
 }
 
 #editor {
@@ -151,6 +168,8 @@ input[type=button]:active {
   right: 0;
   bottom: 0;
   padding: 5px;
+  display: flex;
+  gap: 4px;
 }
 #toolbox input {
   background-color: #fff;
@@ -166,11 +185,11 @@ body[data-popup=false] [data-cmd=expand] {
 #cookies {
   overflow: auto;
 }
-
-.toolbar {
-  padding: 5px 10px;
-  margin-top: -15px;
-  background-color: #fff;
+.packed {
+  display: inline-flex;
+}
+.packed > input {
+  margin: 0;
 }
 
 [hbox] {
@@ -182,6 +201,12 @@ body[data-popup=false] [data-cmd=expand] {
 }
 [flex="1"] {
   flex: 1;
+}
+[flex="3"] {
+  flex: 3;
+}
+[flex="4"] {
+  flex: 4;
 }
 [align=center] {
   align-items: center;
@@ -210,6 +235,7 @@ body[data-popup=false] [data-cmd=expand] {
     display: none;
   }
 }
+
 /* hide last draggable */
 .draggable:nth-of-type(11) {
   display: none;

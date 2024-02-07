@@ -13,6 +13,16 @@
       title: 'Open Cookie Editor in new Tab',
       contexts: ['action']
     });
+    chrome.contextMenus.create({
+      id: 'separator',
+      contexts: ['action'],
+      type: 'separator'
+    });
+    chrome.contextMenus.create({
+      id: 'import',
+      title: 'Import Cookies',
+      contexts: ['action']
+    });
   };
   chrome.runtime.onStartup.addListener(once);
   chrome.runtime.onInstalled.addListener(once);
@@ -26,6 +36,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   else if (info.menuItemId === 'open') {
     chrome.tabs.create({
       url: '/data/popup/index.html?tabId=' + encodeURIComponent(tab.id)
+    });
+  }
+  else if (info.menuItemId === 'import') {
+    chrome.tabs.create({
+      url: '/data/options/index.html'
     });
   }
 });
