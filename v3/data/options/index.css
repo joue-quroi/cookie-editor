@@ -1,8 +1,12 @@
+:root {
+  color-scheme: light dark;
+}
 body {
   font-size: 14px;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
   background-color: #fff;
-  color: #4d5156;
+  color: light-dark(#4d5156, #cecece);
+  background-color: light-dark(#fff, #2c2c2c);
   display: grid;
   place-items: center;
   height: 100vh;
@@ -10,8 +14,8 @@ body {
 }
 select,
 button,
-input[type=submit],
-input[type=button] {
+input[type="submit"],
+input[type="button"] {
   height: 24px;
   color: #444;
   background-image: linear-gradient(rgb(237, 237, 237), rgb(237, 237, 237) 38%, rgb(222, 222, 222));
@@ -24,7 +28,7 @@ textarea,
 input {
   border: solid 1px rgba(0, 0, 0, 0.25);
 }
-input[type=button]:disabled {
+input[type="button"]:disabled {
   opacity: 0.5;
 }
 textarea {
@@ -33,17 +37,17 @@ textarea {
   display: block;
 }
 textarea,
-input[type=text],
-input[type=number] {
+input[type="text"],
+input[type="number"] {
   padding: 5px;
   outline: none;
 }
-input[type=file] {
+input[type="file"] {
   display: none;
 }
 textarea:focus,
-input[type=text]:focus,
-input[type=number]:focus {
+input[type="text"]:focus,
+input[type="number"]:focus {
   background-color: #e5f8ff;
 }
 label,

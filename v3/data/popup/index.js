@@ -107,7 +107,7 @@ window.addEventListener('load', async () => {
       console.log(e);
       document.getElementById('loading').remove();
       console.log(tab);
-      document.getElementById('msg').textContent = 'Cannot find cookies for this page: ' + e.message;
+      document.getElementById('msg').textContent = 'Cannot operate on this page (' + e.message + ')';
     });
   }
 });

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "name": "CookieManager - Cookie Editor",
   "description": "__MSG_description__",
   "default_locale": "en",
@@ -27,6 +27,16 @@
   },
   "homepage_url": "https://webextension.org/listing/cookie-editor.html",
   "background": {
-    "service_worker": "worker.js"
+    "service_worker": "worker.js",
+    "scripts": ["worker.js"]
+  },
+  "commands": {
+    "_execute_action": {}
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{48df221a-8316-4d17-9191-7fc5ea5f14c0}",
+      "strict_min_version": "128.0"
+    }
   }
 }
