@@ -201,6 +201,14 @@ input[type="button"][data-cmd="select-all"] {
 body[data-popup="false"] [data-cmd="expand"] {
   display: none;
 }
+#search-container {
+  background-color: var(--bg-3);
+  padding: 4px;
+}
+#cookie-filter {
+  background-color: var(--bg-8);
+  flex: 1;
+}
 #cookies {
   overflow: auto;
 }
