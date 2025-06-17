@@ -45,6 +45,45 @@ const init = a => {
   }
   // remove loader
   document.getElementById('loading').remove();
+  
+  // Initialize filter functionality
+  const filterInput = document.getElementById('cookie-filter');
+  if (filterInput) {
+    filterInput.addEventListener('input', (e) => filterCookies(e.target.value));
+  }
+};
+
+const filterCookies = (text) => {
+  const details = document.querySelectorAll('#cookies details');
+  text = text.toLowerCase();
+  
+  details.forEach(detail => {
+    const rows = detail.querySelectorAll('tr.cookie');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+      const name = row.querySelector('[data-id="name"]').textContent.toLowerCase();
+      const value = row.querySelector('[data-id="value"]').textContent.toLowerCase();
+      const domain = row.querySelector('[data-id="domain"]').textContent.toLowerCase();
+      
+      const isVisible = !text || 
+        name.includes(text) || 
+        value.includes(text) || 
+        domain.includes(text);
+      
+      row.style.display = isVisible ? '' : 'none';
+      if (isVisible) visibleCount++;
+    });
+    
+    // Update count in summary
+    const countSpan = detail.querySelector('[data-id="number"]');
+    if (countSpan) {
+      const totalCount = rows.length;
+      countSpan.textContent = visibleCount === totalCount ? 
+        totalCount : 
+        `${visibleCount}/${totalCount}`;
+    }
+  });
 };
 
 window.addEventListener('load', async () => {
