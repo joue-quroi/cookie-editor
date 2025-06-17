@@ -51,11 +51,13 @@ editor.isChanged = () => {
   changed = changed || cookie.secure !== document.getElementById('secure').checked;
   changed = changed || cookie.session !== document.getElementById('session').checked;
   changed = changed || cookie.value !== document.getElementById('value').value;
+
   if (document.getElementById('session').checked === false) {
     const v = document.getElementById('date').valueAsNumber +
       document.getElementById('time').valueAsNumber;
-    changed = changed || Math.round(cookie.expirationDate * 1000) !== v;
+    changed = changed || Math.abs(cookie.expirationDate * 1000 - v) > 1;
   }
+
   return changed;
 };
 editor.reset = c => editor.callbacks.reset.push(c);

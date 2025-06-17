@@ -9,40 +9,42 @@
 </head>
 <body vbox data-popup=true>
   <div id="search-container" hbox>
-    <input type="text" id="cookie-filter" placeholder="Filter cookies..." autocomplete="off">
+    <input type="search" id="cookie-filter" placeholder="Filter Cookies (Ctrl + F or Command + F)" autocomplete="off" title="Filter Cookies with Ctrl + F or Command + F. Press Enter to select the first matched cookie">
   </div>
-  <table width=100% id=header>
-    <colgroup>
-      <col width="24">
-      <col>
-      <col>
-      <col width=100>
-      <col width="24">
-      <col width="100">
-      <col width=48>
-      <col width=24>
-      <col width=24>
-      <col width=24>
-      <col width=24>
-      <col width="0">
-    </colgroup>
-    <thead>
-      <tr>
-        <th>-</th>
-        <th>Name</th>
-        <th>Value</th>
-        <th>Domain</th>
-        <th title="Path">Path</th>
-        <th>Expires / Max-Age</th>
-        <th>Size</th>
-        <th title="HttpOnly">HttpOnly</th>
-        <th title="HostOnly">HostOnly</th>
-        <th title="Secure">Secure</th>
-        <th title="Session">Session</th>
-        <th>Select</th>
-      </tr>
-    </thead>
-  </table>
+  <div id="header-container">
+    <table width=100% id=header>
+      <colgroup>
+        <col width="24">
+        <col>
+        <col>
+        <col width=100>
+        <col width="24">
+        <col width="100">
+        <col width=48>
+        <col width=24>
+        <col width=24>
+        <col width=24>
+        <col width=24>
+        <col width="0">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>-</th>
+          <th>Name</th>
+          <th>Value</th>
+          <th>Domain</th>
+          <th title="Path">Path</th>
+          <th>Expires / Max-Age</th>
+          <th>Size</th>
+          <th title="HttpOnly">HttpOnly</th>
+          <th title="HostOnly">HostOnly</th>
+          <th title="Secure">Secure</th>
+          <th title="Session">Session</th>
+          <th>Select</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
   <template id="cookie">
     <tr class="cookie">
       <td><input type="checkbox"></td>

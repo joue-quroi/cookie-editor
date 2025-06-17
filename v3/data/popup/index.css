@@ -1,3 +1,9 @@
+@keyframes detect-scroll {
+  from, to {
+    --can-scroll: ;
+  }
+}
+
 :root {
   --fg-1: #a1a1a1;
   --fg-2: #fff;
@@ -26,6 +32,9 @@ body {
   height: 100vh;
   color: var(--fg-3);
   accent-color: var(--bg-5);
+  timeline-scope: --mmm;
+  animation: detect-scroll;
+  animation-timeline: --mmm;
 }
 body[data-popup="true"] {
   width: 800px;
@@ -53,6 +62,19 @@ body[data-popup="true"] {
 #msg:empty {
   display: none;
 }
+#header-container,
+#cookies {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: var(--can-scroll) stable;
+  scrollbar-color: var(--fg-4) var(--bg-4);
+}
+#header-container {
+  background-color: var(--bg-4);
+}
+#cookies {
+  scroll-timeline-name: --mmm;
+}
 #header,
 #cookies table {
   border-collapse: collapse;
@@ -64,7 +86,7 @@ body[data-popup="true"] {
 }
 body[data-popup="true"] #header th:not(:first-child, :last-child),
 #cookies td:not(:first-child, :last-child) {
-  border: dotted 1px var(--bd-1);
+  border: solid 1px var(--bd-1);
   border-top: none;
   border-bottom: none;
 }
@@ -118,6 +140,7 @@ input[type="time"] {
 }
 input[type="date"],
 input[type="time"],
+input[type="search"],
 input[type="text"],
 textarea {
   outline: none;
@@ -125,12 +148,14 @@ textarea {
 }
 input[type="date"],
 input[type="time"],
+input[type="search"],
 input[type="text"] {
   padding: 5px;
   color: var(--fg-3);
 }
 input[type="date"]:focus,
 input[type="time"]:focus,
+input[type="search"]:focus,
 input[type="text"]:focus {
   background-color: var(--bg-6);
 }
@@ -208,9 +233,7 @@ body[data-popup="false"] [data-cmd="expand"] {
 #cookie-filter {
   background-color: var(--bg-8);
   flex: 1;
-}
-#cookies {
-  overflow: auto;
+  padding-block: 10px;
 }
 .packed {
   display: inline-flex;
@@ -264,5 +287,9 @@ body[data-popup="false"] [data-cmd="expand"] {
 
 /* hide last draggable */
 .draggable:nth-of-type(11) {
+  display: none;
+}
+
+.hidden {
   display: none;
 }

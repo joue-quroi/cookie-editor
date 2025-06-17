@@ -11,6 +11,21 @@ if (tabId) {
 }
 document.body.dataset.popup = !tabId && !search;
 
+const notify = e => {
+  chrome.action.setBadgeText({
+    tabId,
+    text: 'E'
+  });
+  chrome.action.setTitle({
+    tabId,
+    title: e.message || e
+  });
+  chrome.action.setBadgeBackgroundColor({
+    tabId,
+    color: 'red'
+  });
+};
+
 const init = a => {
   const hostnames = a.filter(o => o && o.host).map(o => o.origin).filter((h, i, l) => l.indexOf(h) === i);
 
@@ -45,48 +60,42 @@ const init = a => {
   }
   // remove loader
   document.getElementById('loading').remove();
-  
+
   // Initialize filter functionality
-  const filterInput = document.getElementById('cookie-filter');
-  if (filterInput) {
-    filterInput.addEventListener('input', (e) => filterCookies(e.target.value));
-  }
+  document.getElementById('cookie-filter').oninput = e => filterCookies(e.target.value);
 };
 
-const filterCookies = (text) => {
+const filterCookies = text => {
   const details = document.querySelectorAll('#cookies details');
   text = text.toLowerCase();
-  
+
   details.forEach(detail => {
     const rows = detail.querySelectorAll('tr.cookie');
     let visibleCount = 0;
-    
+
     rows.forEach(row => {
       const name = row.querySelector('[data-id="name"]').textContent.toLowerCase();
       const value = row.querySelector('[data-id="value"]').textContent.toLowerCase();
       const domain = row.querySelector('[data-id="domain"]').textContent.toLowerCase();
-      
-      const isVisible = !text || 
-        name.includes(text) || 
-        value.includes(text) || 
-        domain.includes(text);
-      
-      row.style.display = isVisible ? '' : 'none';
-      if (isVisible) visibleCount++;
+
+      const isVisible = !text || name.includes(text) || value.includes(text) || domain.includes(text);
+
+      row.classList[isVisible ? 'remove' : 'add']('hidden');
+      if (isVisible) {
+        visibleCount++;
+      }
     });
-    
+
     // Update count in summary
     const countSpan = detail.querySelector('[data-id="number"]');
     if (countSpan) {
       const totalCount = rows.length;
-      countSpan.textContent = visibleCount === totalCount ? 
-        totalCount : 
-        `${visibleCount}/${totalCount}`;
+      countSpan.textContent = visibleCount === totalCount ? totalCount : `${visibleCount}/${totalCount}`;
     }
   });
 };
 
-window.addEventListener('load', async () => {
+addEventListener('load', async () => {
   if (search === 'true') {
     let s = prompt('Please enter the domain (e.g.: www.example.com)', hash.get('s') || 'www.example.com') ||
       'wwww.example.com';
@@ -143,9 +152,8 @@ window.addEventListener('load', async () => {
       }
       throw Error('This page has no document');
     }).catch(e => {
-      console.log(e);
+      console.error(e);
       document.getElementById('loading').remove();
-      console.log(tab);
       document.getElementById('msg').textContent = 'Cannot operate on this page (' + e.message + ')';
     });
   }
@@ -174,7 +182,6 @@ editor.create(e => {
     const tbody = e.target.closest('details').querySelector('tbody');
     const origin = e.target.dataset.origin;
     const trs = tbody.add(list, origin);
-    console.log(list, origin);
     for (const tr of trs) {
       tr.dataset.edited = true;
     }
@@ -250,15 +257,8 @@ editor.save(() => {
     // move to the bottom
     table.append(tr);
   }).catch(e => {
-    chrome.notifications.create({
-      title: chrome.runtime.getManifest().name,
-      type: 'basic',
-      iconUrl: '/data/icons/48.png',
-      message: e.message || e
-    }, () => {
-      console.log(e);
-      // location.reload()
-    });
+    console.error(e);
+    notify(e);
   });
 });
 
