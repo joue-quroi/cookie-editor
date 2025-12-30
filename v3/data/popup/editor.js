@@ -32,6 +32,10 @@ editor.update = (cookie, origin = editor.origin, tr) => {
     document.getElementById('time').valueAsNumber = cookie.expirationDate * 1000;
   }
   document.getElementById('session').checked = cookie.session;
+  document.getElementById('sameSite').value = cookie.sameSite;
+  if (!document.getElementById('sameSite').value) {
+    document.getElementById('sameSite').value = 'unspecified';
+  }
   document.getElementById('value').value = cookie.value || '';
   document.getElementById('editor').cookie = cookie;
   document.getElementById('session').dispatchEvent(new Event('change', {
@@ -44,6 +48,7 @@ editor.isChanged = () => {
   changed = changed || cookie.name !== document.getElementById('name').value;
   changed = changed || cookie.domain !== document.getElementById('domain').value;
   changed = changed || cookie.path !== document.getElementById('path').value;
+  changed = changed || cookie.sameSite !== document.getElementById('sameSite').value;
 
   const aHostOnly = cookie.hostOnly || cookie.domain === undefined;
   changed = changed || aHostOnly !== document.getElementById('hostOnly').checked;
@@ -88,12 +93,16 @@ editor.toObject = () => {
     name: document.getElementById('name').value,
     domain: document.getElementById('domain').value,
     path: document.getElementById('path').value,
+    sameSite: document.getElementById('sameSite').value,
     httpOnly: document.getElementById('httpOnly').checked,
     secure: document.getElementById('secure').checked,
     value: document.getElementById('value').value
   };
   if (document.getElementById('hostOnly').checked) {
     delete obj.domain;
+  }
+  if (obj.sameSite === 'no_restriction') {
+    obj.secure = true;
   }
   const session = document.getElementById('session').checked;
   if (session === false) {
@@ -123,3 +132,9 @@ document.getElementById('session').addEventListener('change', ({target}) => {
 }
 
 editor.focus = () => document.getElementById('name').focus();
+
+document.getElementById('value').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+  }
+});

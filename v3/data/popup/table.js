@@ -42,6 +42,8 @@ table.write = (root, cookie, origin) => {
   root.querySelector('[data-id=hostOnly]').textContent = cookie.hostOnly ? '✓' : '';
   root.querySelector('[data-id=secure]').textContent = cookie.secure ? '✓' : '';
   root.querySelector('[data-id=session]').textContent = cookie.session ? '✓' : '';
+  root.querySelector('[data-id=path]').title = root.querySelector('[data-id=path]').textContent =
+    cookie.path ? cookie.path : '';
   root.querySelector('[type=radio]').name = origin;
 
   return root;

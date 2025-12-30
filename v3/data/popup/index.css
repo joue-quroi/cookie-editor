@@ -133,11 +133,13 @@ input[type="text"] {
   box-sizing: border-box;
   text-indent: 3px;
 }
+select,
 input[type="date"],
 input[type="time"] {
   width: 100%;
   box-sizing: border-box;
 }
+select,
 input[type="date"],
 input[type="time"],
 input[type="search"],
@@ -146,6 +148,7 @@ textarea {
   outline: none;
   border: none;
 }
+select,
 input[type="date"],
 input[type="time"],
 input[type="search"],

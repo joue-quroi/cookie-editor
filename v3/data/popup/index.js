@@ -1,4 +1,4 @@
-/* globals cookies, table, editor, Resizable */
+/* global cookies, table, editor, Resizable */
 'use strict';
 
 const args = new URLSearchParams(location.search);
@@ -27,12 +27,21 @@ const notify = e => {
 };
 
 const init = a => {
-  const hostnames = a.filter(o => o && o.host).map(o => o.origin).filter((h, i, l) => l.indexOf(h) === i);
+  const hostnames = {};
+  for (const o of a) {
+    if (o && o.host) {
+      hostnames[o.host] = o;
+    }
+  }
+
+  // a.filter(o => o && o.host).map(o => o.origin).filter((h, i, l) => l.indexOf(h) === i);
 
   const top = a.filter(o => o.top).shift();
-  hostnames.forEach(h => {
+
+  for (const o of Object.values(hostnames)) {
+    const h = o.origin;
     const tbody = table.section(h, h === top.origin);
-    cookies.all(h).then(cs => {
+    cookies.all(o.host).then(cs => {
       tbody.add(cs, h);
       tbody.count(cs.length);
       if (h === top.origin && cs.length) {
@@ -44,7 +53,8 @@ const init = a => {
         document.getElementById('domain').value = top.hostname;
       }
     });
-  });
+  }
+
   // resizing for expanded mode
   if (false && document.body.dataset.popup === 'false') {
     const resizable = new Resizable(document.getElementById('header'), {
@@ -211,21 +221,30 @@ editor.create(e => {
             const entries = reader.result.split('\n').filter(a => a && a[0] !== '#');
             for (const entry of entries) {
               const [domain, sub, path, secure, expirationDate, name, value] = entry.split('\t');
-              list.push({
+              const a = {
                 path,
                 secure: secure === 'TRUE',
-                expirationDate: parseFloat(expirationDate),
                 name,
                 value,
-                session: false
-              });
+                replace: false
+              };
+              if (expirationDate) {
+                a.expirationDate = parseFloat(expirationDate);
+                a.session = false;
+              }
+              else {
+                a.session = true;
+              }
+
+              list.push(a);
             }
             next(list);
           }
           else if (file.name.endsWith('.json')) {
             const json = JSON.parse(reader.result).map(a => {
               delete a.domain;
-              a.session = false;
+
+              a.session = !('expirationDate' in a);
               return a;
             });
             next(json);
@@ -241,7 +260,8 @@ editor.create(e => {
       name: '',
       value: '',
       expirationDate: Date.now() / 1000 + 24 * 60 * 60,
-      session: false
+      session: false,
+      replace: false
     }]);
   }
 });
@@ -258,6 +278,7 @@ editor.save(() => {
     table.append(tr);
   }).catch(e => {
     console.error(e);
+    document.querySelector('notification-view').notify(e.message, 'error', 5000);
     notify(e);
   });
 });

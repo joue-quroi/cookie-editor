@@ -8,6 +8,7 @@
   <link rel="icon" type="image/png" href="/data/icons/48.png">
 </head>
 <body vbox data-popup=true>
+  <notification-view></notification-view>
   <div id="search-container" hbox>
     <input type="search" id="cookie-filter" placeholder="Filter Cookies (Ctrl + F or Command + F)" autocomplete="off" title="Filter Cookies with Ctrl + F or Command + F. Press Enter to select the first matched cookie">
   </div>
@@ -109,6 +110,15 @@
             <td><input type="text" autocomplete="off" id="path"></td>
           </tr>
           <tr>
+            <td>Same Site</td>
+            <td><select id="sameSite" title="'None' corresponds to a cookie set with 'SameSite=None', 'lax' to 'SameSite=Lax', and 'strict' to 'SameSite=Strict'. 'Unspecified' corresponds to a cookie set without the SameSite attribute.">
+              <option value="no_restriction">None</option>
+              <option value="lax">Lax</option>
+              <option value="strict">Strict</option>
+              <option value="unspecified" selected>Unspecified</option>
+            </select></td>
+          </tr>
+          <tr>
             <td rowspan="2">Expiration (ISO)</td>
             <td>
               <input id="date" type="date" required="true">
@@ -129,7 +139,7 @@
       </table>
     </div>
     <div vbox flex="4">
-      <textarea flex="1" id="value" placeholder="cookie value" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+      <textarea flex="1" rows="1" id="value" placeholder="cookie value" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
     </div>
     <div id="toolbox">
         <input type="button" value="Export" data-cmd="export" disabled="true" title="Use Shift key while clicking to export as Wget/Curl compatible format">
@@ -146,6 +156,7 @@
 
   <div id="loading"></div>
   <div id="msg" hbox pack=center align=center></div>
+  <script src="notification-view.js"></script>
   <script src="cookies.js"></script>
   <script src="resizable.js"></script>
   <script src="table.js"></script>
