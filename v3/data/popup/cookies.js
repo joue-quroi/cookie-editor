@@ -1,8 +1,23 @@
-'use strict';
-
 const cookies = {};
 
-cookies.all = domain => chrome.cookies.getAll({domain});
+cookies.all = async domain => {
+  const results = [];
+
+  const stores = await chrome.cookies.getAllCookieStores();
+
+  for (const store of stores) {
+    // Let Chrome filter by domain!
+    const cookies = await chrome.cookies.getAll({
+      storeId: store.id,
+      domain: domain,
+      partitionKey: {}
+    });
+
+    results.push(...cookies);
+  }
+
+  return results;
+};
 
 cookies.replace = async (url, oldC, newC) => {
   oldC.path = oldC.path || '/';

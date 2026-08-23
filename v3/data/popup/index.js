@@ -1,4 +1,4 @@
-/* global cookies, table, editor, Resizable */
+/* global cookies, table, editor, Resizable, tld */
 'use strict';
 
 const args = new URLSearchParams(location.search);
@@ -30,7 +30,13 @@ const init = a => {
   const hostnames = {};
   for (const o of a) {
     if (o && o.host) {
-      hostnames[o.host] = o;
+      try {
+        const domain = tld.getDomain(o.host);
+        hostnames[domain] = o;
+      }
+      catch (e) {
+        console.error(e);
+      }
     }
   }
 
@@ -38,10 +44,10 @@ const init = a => {
 
   const top = a.filter(o => o.top).shift();
 
-  for (const o of Object.values(hostnames)) {
+  for (const [domain, o] of Object.entries(hostnames)) {
     const h = o.origin;
-    const tbody = table.section(h, h === top.origin);
-    cookies.all(o.host).then(cs => {
+    const tbody = table.section(domain, h === top.origin);
+    cookies.all(domain).then(cs => {
       tbody.add(cs, h);
       tbody.count(cs.length);
       if (h === top.origin && cs.length) {
@@ -137,9 +143,17 @@ addEventListener('load', async () => {
           tabId,
           allFrames: true
         },
-        func: () => Object.assign({
-          top: window.top === window
-        }, document.location),
+        func: () => ({
+          top: window.top === window,
+          hash: location.hash,
+          host: location.host,
+          hostname: location.hostname,
+          href: location.href,
+          origin: location.origin,
+          pathname: location.pathname,
+          port: location.port,
+          protocol: location.protocol
+        }),
         injectImmediately: true
       }),
       new Promise((resolve, reject) => setTimeout(() => {
@@ -156,6 +170,7 @@ addEventListener('load', async () => {
       }, 5000))
     ]).then(a => {
       const results = a.map(r => r.result).filter(o => o);
+
       if (results.length) {
         init(results);
         return;
