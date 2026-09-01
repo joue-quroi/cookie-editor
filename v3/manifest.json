@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "version": "0.2.5",
+  "version": "0.2.7",
   "name": "CookieManager - Cookie Editor",
   "description": "__MSG_description__",
   "default_locale": "en",
@@ -36,7 +36,10 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "{48df221a-8316-4d17-9191-7fc5ea5f14c0}",
-      "strict_min_version": "128.0"
+      "strict_min_version": "148.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }

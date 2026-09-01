@@ -11,6 +11,10 @@ if (tabId) {
 }
 document.body.dataset.popup = !tabId && !search;
 
+if (args.has('domain')) {
+  document.title = 'Cookie Editor - ' + args.get('domain');
+}
+
 const notify = e => {
   chrome.action.setBadgeText({
     tabId,
@@ -43,18 +47,21 @@ const init = a => {
   // a.filter(o => o && o.host).map(o => o.origin).filter((h, i, l) => l.indexOf(h) === i);
 
   const top = a.filter(o => o.top).shift();
+  const td = tld.getDomain(top.host);
+  args.set('domain', td);
 
   for (const [domain, o] of Object.entries(hostnames)) {
+    const isTop = td === domain;
     const h = o.origin;
-    const tbody = table.section(domain, h === top.origin);
+    const tbody = table.section(domain, isTop);
     cookies.all(domain).then(cs => {
       tbody.add(cs, h);
       tbody.count(cs.length);
-      if (h === top.origin && cs.length) {
+      if (isTop && cs.length) {
         tbody.first().active();
       }
       // when there is no cookie
-      if (cs.length === 0 && h === top.origin) {
+      if (cs.length === 0 && isTop) {
         editor.origin = top.origin;
         document.getElementById('domain').value = top.hostname;
       }
@@ -323,26 +330,36 @@ editor.expand(() => chrome.tabs.query({
 }));
 editor.export(e => {
   const cookies = document.querySelector('[data-cmd=export]').cookies;
-  let text = JSON.stringify(cookies, null, '  ');
+  let text;
+  let type;
+  let extension;
   if (e.shiftKey) {
-    text = cookies.map(cookie => {
+    type = 'application/json';
+    extension = 'json';
+    text = JSON.stringify(cookies, null, '  ');
+  }
+  else {
+    type = 'text/plain';
+    extension = 'txt';
+    text = '# Netscape HTTP Cookie File\n' + cookies.map(cookie => {
+      const domain = cookie.hostOnly ? cookie.domain :
+        (cookie.domain.startsWith('.') ? cookie.domain : '.' + cookie.domain);
+
       return [
-        cookie.domain,
-        'TRUE',
+        domain,
+        cookie.hostOnly ? 'FALSE' : 'TRUE',
         cookie.path,
         cookie.secure.toString().toUpperCase(),
-        cookie.expirationDate,
+        Math.floor(cookie.expirationDate ?? 0),
         cookie.name,
         cookie.value].join('\t');
     }).join('\n');
   }
-  const blob = new Blob([text], {
-    type: e.shiftKey ? 'text/plain' : 'application/json'
-  });
+  const blob = new Blob([text], {type});
   const objectURL = URL.createObjectURL(blob);
   Object.assign(document.createElement('a'), {
     href: objectURL,
-    download: 'exported-cookies.' + (e.shiftKey ? 'txt' : 'json')
+    download: 'exported-cookies.' + extension
   }).dispatchEvent(new MouseEvent('click'));
   setTimeout(() => URL.revokeObjectURL(objectURL));
 });
